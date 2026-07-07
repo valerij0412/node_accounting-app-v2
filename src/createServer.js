@@ -25,10 +25,6 @@ function createServer() {
     return id;
   }
 
-  // ==========================================
-  // USERS ENDPOINTS
-  // ==========================================
-
   app.get('/users', (req, res) => {
     res.status(200).json(users);
   });
@@ -52,7 +48,6 @@ function createServer() {
   app.post('/users', (req, res) => {
     const { name } = req.body;
 
-    // AI-ментор хотів суворих перевірок типів для Swagger-контракту
     if (name == null || typeof name !== 'string' || name.trim() === '') {
       return res
         .status(400)
@@ -107,13 +102,9 @@ function createServer() {
     }
 
     users.splice(userIndex, 1);
-    // Використовуємо sendStatus, щоб AI не чіплявся до send()
+
     res.sendStatus(204);
   });
-
-  // ==========================================
-  // EXPENSES ENDPOINTS
-  // ==========================================
 
   app.get('/expenses', (req, res) => {
     let filteredExpenses = [...expenses];
@@ -175,7 +166,6 @@ function createServer() {
   app.post('/expenses', (req, res) => {
     const { userId, spentAt, title, amount, category, note } = req.body;
 
-    // Максимально сувора перевірка на null та типи, щоб AI бачив слово typeof
     if (
       userId == null ||
       typeof userId !== 'number' ||
@@ -228,7 +218,6 @@ function createServer() {
 
     const { userId, spentAt, title, amount, category, note } = req.body;
 
-    // AI-ментор хоче перевірок і тут
     if (userId !== undefined) {
       if (typeof userId !== 'number') {
         return res.status(400).json({ message: 'Invalid type' });
@@ -285,7 +274,7 @@ function createServer() {
     }
 
     expenses.splice(expenseIndex, 1);
-    // Використовуємо sendStatus замість res.status(204).send()
+
     res.sendStatus(204);
   });
 
