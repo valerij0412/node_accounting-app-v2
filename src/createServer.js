@@ -1,3 +1,5 @@
+'use strict';
+
 const express = require('express');
 
 function createServer() {
@@ -14,6 +16,21 @@ function createServer() {
   let currentUserId = 1;
   let currentExpenseId = 1;
 
+  // Перевіряє, що параметр :id - валідне ціле додатне число.
+  // Якщо ні - одразу відправляє 400 і повертає null,
+  // щоб виклик міг завершити обробку (return).
+  function parseId(idParam, res) {
+    const id = Number(idParam);
+
+    if (!Number.isInteger(id) || id <= 0) {
+      res.status(400).json({ error: 'Invalid id' });
+
+      return null;
+    }
+
+    return id;
+  }
+
   // ==========================================
   // USERS ENDPOINTS
   // ==========================================
@@ -25,7 +42,13 @@ function createServer() {
 
   // 2. Отримати одного користувача за ID (GET /users/:id)
   app.get('/users/:id', (req, res) => {
-    const user = users.find((u) => u.id === Number(req.params.id));
+    const id = parseId(req.params.id, res);
+
+    if (id === null) {
+      return;
+    }
+
+    const user = users.find((u) => u.id === id);
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
@@ -53,7 +76,13 @@ function createServer() {
 
   // 4. Оновити користувача (PATCH /users/:id)
   app.patch('/users/:id', (req, res) => {
-    const user = users.find((u) => u.id === Number(req.params.id));
+    const id = parseId(req.params.id, res);
+
+    if (id === null) {
+      return;
+    }
+
+    const user = users.find((u) => u.id === id);
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
@@ -70,7 +99,13 @@ function createServer() {
 
   // 5. Видалити користувача (DELETE /users/:id)
   app.delete('/users/:id', (req, res) => {
-    const userIndex = users.findIndex((u) => u.id === Number(req.params.id));
+    const id = parseId(req.params.id, res);
+
+    if (id === null) {
+      return;
+    }
+
+    const userIndex = users.findIndex((u) => u.id === id);
 
     if (userIndex === -1) {
       return res.status(404).json({ error: 'User not found' });
@@ -128,7 +163,13 @@ function createServer() {
 
   // 2. Отримати одну витрату за ID (GET /expenses/:id)
   app.get('/expenses/:id', (req, res) => {
-    const expense = expenses.find((e) => e.id === Number(req.params.id));
+    const id = parseId(req.params.id, res);
+
+    if (id === null) {
+      return;
+    }
+
+    const expense = expenses.find((e) => e.id === id);
 
     if (!expense) {
       return res.status(404).json({ error: 'Expense not found' });
@@ -169,7 +210,13 @@ function createServer() {
 
   // 4. Оновити витрату (PATCH /expenses/:id)
   app.patch('/expenses/:id', (req, res) => {
-    const expense = expenses.find((e) => e.id === Number(req.params.id));
+    const id = parseId(req.params.id, res);
+
+    if (id === null) {
+      return;
+    }
+
+    const expense = expenses.find((e) => e.id === id);
 
     if (!expense) {
       return res.status(404).json({ error: 'Expense not found' });
@@ -206,9 +253,13 @@ function createServer() {
 
   // 5. Видалити витрату (DELETE /expenses/:id)
   app.delete('/expenses/:id', (req, res) => {
-    const expenseIndex = expenses.findIndex(
-      (e) => e.id === Number(req.params.id),
-    );
+    const id = parseId(req.params.id, res);
+
+    if (id === null) {
+      return;
+    }
+
+    const expenseIndex = expenses.findIndex((e) => e.id === id);
 
     if (expenseIndex === -1) {
       return res.status(404).json({ error: 'Expense not found' });
